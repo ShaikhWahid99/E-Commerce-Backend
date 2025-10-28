@@ -18,7 +18,6 @@ exports.createUser = async (req, res) => {
         const doc = await user.save();
 
         req.login(sanitizeUser(doc), (err) => {
-          // this also calls serializer and adds to session
           if (err) {
             res.status(400).json(err);
           } else {
@@ -40,13 +39,14 @@ exports.createUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
+  const user = req.user;
   res
-    .cookie("jwt", req.user.token, {
+    .cookie("jwt", user.token, {
       expires: new Date(Date.now() + 3600000),
       httpOnly: true,
     })
     .status(201)
-    .json(req.user.token);
+    .json({ id: user.id, role: user.role, token: user.token });
 };
 
 exports.checkAuth = async (req, res) => {
