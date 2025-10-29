@@ -23,8 +23,6 @@ const ordersRouter = require("./routes/Order");
 const { User } = require("./model/User");
 const { isAuth, sanitizeUser, cookieExtractor } = require("./services/common");
 
-// JWT options
-
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = process.env.JWT_SECRET_KEY;
@@ -54,6 +52,9 @@ server.use("/api/users", isAuth(), usersRouter.router);
 server.use("/api/auth", authRouter.router);
 server.use("/api/cart", isAuth(), cartRouter.router);
 server.use("/api/orders", isAuth(), ordersRouter.router);
+server.get("*", (req, res) =>
+  res.sendFile(path.resolve("build", "index.html"))
+);
 
 server.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "build", "index.html"));
