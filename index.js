@@ -36,7 +36,7 @@ server.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-  })
+  }),
 );
 server.use(passport.authenticate("session"));
 // server.use(
@@ -53,11 +53,20 @@ server.use("/api/auth", authRouter.router);
 server.use("/api/cart", isAuth(), cartRouter.router);
 server.use("/api/orders", isAuth(), ordersRouter.router);
 server.get("*", (req, res) =>
-  res.sendFile(path.resolve("build", "index.html"))
+  res.sendFile(path.resolve("build", "index.html")),
 );
 
 server.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "build", "index.html"));
+  res.sendFile(path.resolve(__dirname, "build", "index.html"), {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith("index.html")) {
+        res.setHeader(
+          "Cache-Control",
+          "no-store, no-cache, must-revalidate, proxy-revalidate",
+        );
+      }
+    },
+  });
 });
 
 passport.use(
@@ -65,7 +74,7 @@ passport.use(
   new LocalStrategy({ usernameField: "email" }, async function (
     email,
     password,
-    done
+    done,
   ) {
     try {
       const user = await User.findOne({ email: email });
@@ -85,15 +94,15 @@ passport.use(
           }
           const token = jwt.sign(
             sanitizeUser(user),
-            process.env.JWT_SECRET_KEY
+            process.env.JWT_SECRET_KEY,
           );
           done(null, { id: user.id, role: user.role, token });
-        }
+        },
       );
     } catch (err) {
       done(err);
     }
-  })
+  }),
 );
 
 passport.use(
@@ -110,7 +119,7 @@ passport.use(
     } catch (err) {
       return done(err, false);
     }
-  })
+  }),
 );
 
 passport.serializeUser(function (user, cb) {
