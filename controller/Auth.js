@@ -1,3 +1,4 @@
+const { connectDB } = require("../utils/db");
 const { User } = require("../model/User");
 const crypto = require("crypto");
 const { sanitizeUser } = require("../services/common");
@@ -5,6 +6,7 @@ const SECRET_KEY = "SECRET_KEY";
 const jwt = require("jsonwebtoken");
 
 exports.createUser = async (req, res) => {
+  await connectDB();
   try {
     const salt = crypto.randomBytes(16);
     crypto.pbkdf2(
@@ -39,6 +41,7 @@ exports.createUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
+  await connectDB();
   const user = req.user;
   res
     .cookie("jwt", user.token, {
@@ -50,6 +53,7 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
+  await connectDB();
   const user = req.user;
   res
     .cookie("jwt", null, {
@@ -60,6 +64,7 @@ exports.logout = async (req, res) => {
 };
 
 exports.checkAuth = async (req, res) => {
+  await connectDB();
   if (req.user) {
     res.json(req.user);
   } else {

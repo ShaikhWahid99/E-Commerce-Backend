@@ -1,6 +1,8 @@
+const { connectDB } = require("../utils/db");
 const { Order } = require("../model/Order");
 
 exports.fetchOrdersByUser = async (req, res) => {
+  await connectDB();
     const { id } = req.user;
     try {
       const orders = await Order.find({ user: id });
@@ -12,6 +14,7 @@ exports.fetchOrdersByUser = async (req, res) => {
   };
   
   exports.createOrder = async (req, res) => {
+  await connectDB();
     const order = new Order(req.body);
     try {
       const doc = await order.save();
@@ -22,6 +25,7 @@ exports.fetchOrdersByUser = async (req, res) => {
   };
   
   exports.deleteOrder = async (req, res) => {
+  await connectDB();
       const { id } = req.params;
       try {
       const order = await Order.findByIdAndDelete(id);
@@ -32,6 +36,7 @@ exports.fetchOrdersByUser = async (req, res) => {
   };
   
   exports.updateOrder = async (req, res) => {
+  await connectDB();
     const { id } = req.params;
     try {
       const order = await Order.findByIdAndUpdate(id, req.body, {
@@ -44,6 +49,7 @@ exports.fetchOrdersByUser = async (req, res) => {
   };
 
   exports.fetchAllOrders = async (req, res) => {
+  await connectDB();
     // sort = {_sort:"price",_order="desc"}
     // pagination = {_page:1,_limit=10}
     let query = Order.find({deleted:{$ne:true}});

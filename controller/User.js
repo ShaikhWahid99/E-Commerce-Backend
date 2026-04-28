@@ -1,7 +1,9 @@
+const { connectDB } = require("../utils/db");
 const { Category } = require('../model/Category');
 const { User } = require('../model/User');
 
 exports.fetchUserById = async (req, res) => {
+  await connectDB();
   const { id } = req.user;
   console.log(id)
   try {
@@ -13,6 +15,7 @@ exports.fetchUserById = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
+  await connectDB();
   const { id } = req.params;
   try {
     const user = await User.findByIdAndUpdate(id, req.body, { new: true });

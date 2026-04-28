@@ -1,6 +1,8 @@
+const { connectDB } = require("../utils/db");
 const { Brand } = require('../model/Brand');
 
 exports.fetchBrands = async (req, res) => {
+  await connectDB();
   try {
     const brands = await Brand.find({}).exec();
     res.status(200).json(brands);
@@ -10,6 +12,7 @@ exports.fetchBrands = async (req, res) => {
 };
 
 exports.createBrand = async (req, res) => {
+  await connectDB();
   const brand = new Brand(req.body);
   try {
     const doc = await brand.save();

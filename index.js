@@ -22,6 +22,7 @@ const cartRouter = require("./routes/Cart");
 const ordersRouter = require("./routes/Order");
 const { User } = require("./model/User");
 const { isAuth, sanitizeUser, cookieExtractor } = require("./services/common");
+const { connectDB } = require("./utils/db");
 
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
@@ -52,6 +53,13 @@ server.use("/api/users", isAuth(), usersRouter.router);
 server.use("/api/auth", authRouter.router);
 server.use("/api/cart", isAuth(), cartRouter.router);
 server.use("/api/orders", isAuth(), ordersRouter.router);
+
+// keep-alive ping route
+server.get("/api/ping", async (req, res) => {
+  await connectDB();
+  res.json({ status: "ok" });
+});
+
 server.get("*", (req, res) =>
   res.sendFile(path.resolve("build", "index.html")),
 );
@@ -77,6 +85,7 @@ passport.use(
     done,
   ) {
     try {
+      await connectDB();
       const user = await User.findOne({ email: email });
       console.log(email, password, user);
       if (!user) {
@@ -110,6 +119,7 @@ passport.use(
   new JwtStrategy(opts, async function (jwt_payload, done) {
     console.log({ jwt_payload });
     try {
+      await connectDB();
       const user = await User.findById(jwt_payload.id);
       if (user) {
         return done(null, sanitizeUser(user));
@@ -139,7 +149,7 @@ passport.deserializeUser(function (user, cb) {
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect(process.env.MONGODB_URL);
+  await connectDB();
   console.log("database connected");
 }
 

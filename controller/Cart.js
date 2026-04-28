@@ -1,6 +1,8 @@
+const { connectDB } = require("../utils/db");
 const { Cart } = require('../model/Cart');
 
 exports.fetchCartByUser = async (req, res) => {
+  await connectDB();
   const { id } = req.user;
   try {
     const cartItems = await Cart.find({ user: id }).populate('product');
@@ -12,6 +14,7 @@ exports.fetchCartByUser = async (req, res) => {
 };
 
 exports.addToCart = async (req, res) => {
+  await connectDB();
   const {id} = req.user;
   const cart = new Cart({...req.body,user:id});
   try {
@@ -24,6 +27,7 @@ exports.addToCart = async (req, res) => {
 };
 
 exports.deleteFromCart = async (req, res) => {
+  await connectDB();
     const { id } = req.params;
     try {
     const doc = await Cart.findByIdAndDelete(id);
@@ -34,6 +38,7 @@ exports.deleteFromCart = async (req, res) => {
 };
 
 exports.updateCart = async (req, res) => {
+  await connectDB();
   const { id } = req.params;
   try {
     const cart = await Cart.findByIdAndUpdate(id, req.body, {

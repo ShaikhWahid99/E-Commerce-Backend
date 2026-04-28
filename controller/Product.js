@@ -1,6 +1,8 @@
+const { connectDB } = require("../utils/db");
 const { Product } = require("../model/Product");
 
 exports.createProduct = async (req, res) => {
+  await connectDB();
   const product = new Product(req.body);
   try {
     const doc = await product.save();
@@ -11,6 +13,7 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.fetchAllProducts = async (req, res) => {
+  await connectDB();
   // filter = {"category":["smartphone","laptops"]}
   // sort = {_sort:"price",_order="desc"}
   // pagination = {_page:1,_limit=10}
@@ -55,6 +58,7 @@ exports.fetchAllProducts = async (req, res) => {
 };
 
 exports.fetchProductById = async (req, res) => {
+  await connectDB();
   const { id } = req.params;
 
   try {
@@ -66,6 +70,7 @@ exports.fetchProductById = async (req, res) => {
 };
 
 exports.updateProduct = async (req, res) => {
+  await connectDB();
   const { id } = req.params;
   try {
     const product = await Product.findByIdAndUpdate(id, req.body, {

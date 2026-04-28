@@ -1,6 +1,8 @@
+const { connectDB } = require("../utils/db");
 const { Category } = require('../model/Category');
 
 exports.fetchCategories = async (req, res) => {
+  await connectDB();
   try {
     const categories = await Category.find({}).exec();
     res.status(200).json(categories);
@@ -10,6 +12,7 @@ exports.fetchCategories = async (req, res) => {
 };
 
 exports.createCategory = async (req, res) => {
+  await connectDB();
   const category = new Category(req.body);
   try {
     const doc = await category.save();
